@@ -1,0 +1,32 @@
+{
+    "name": "noonenew/laramapleaflet",
+    "description": "Simple package to facilitate and automate the use of maps in Laravel 5.x using leaflet v1 library",
+    "keywords": [
+      "leaflet","laravel5","maps","noonenew"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "M",
+            "email": "mplanmaster@gmail.com"
+        }
+    ],
+    "require": {
+      "php": ">=5.6.4",
+      "illuminate/support": "~5.1"
+    },
+
+    "autoload": {
+      "psr-4": {
+        "Noonenew\\LaravelLeafLet\\" : "src/"
+      }
+    },
+    
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Noonenew\\LaravelLeafLet\\Providers\\LeafletServiceProvider"
+            ]
+        }
+    }
+}
