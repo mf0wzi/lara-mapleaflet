@@ -3,7 +3,7 @@
     document.addEventListener("DOMContentLoaded", function(event) {
         (function() {
     		"use strict";
-            			let map = L.map('{!! $mapid !! }}', {scrollWheelZoom: {!! $scrollWheelZoom !!},maxZoom: {!! $maxZoom !!}}).setView([{!! $mapLat !!},{!! $mapLong !!}],{!! $zoom !!});
+            			let map = L.map('{!! $mapid !!}', {scrollWheelZoom: {!! $scrollWheelZoom !!},maxZoom: {!! $maxZoom !!}).setView([{!! $mapLat !!},{!! $mapLong !!}],{!! $zoom !!});
 			let controlCustom = new L.Control.Custom(null,null,{ collapsed: true }).addTo(map);
 			let legendCustom = new L.Control.Customs(null,null,{ collapsed: true }).addTo(map);
 			let stateChangingButton = L.easyButton({
