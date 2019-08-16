@@ -1,13 +1,9 @@
-<?php namespace Noonenew\LaravelChartJs\Providers;
+<?php namespace Noonenew\LaravelLeafLet\Providers;
 
-use Noonenew\LaravelChartJs\Builder;
-use Noonenew\LaravelChartJs\ChartBar;
-use Noonenew\LaravelChartJs\ChartLine;
-use Noonenew\LaravelChartJs\ChartPieAndDoughnut;
-use Noonenew\LaravelChartJs\ChartRadar;
+use Noonenew\LaravelLeafLet\Builder;
 use Illuminate\Support\ServiceProvider;
 
-class ChartjsServiceProvider extends ServiceProvider
+class LeafletServiceProvider extends ServiceProvider
 {
 
     /**
@@ -18,8 +14,8 @@ class ChartjsServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'chart-template');
-        $this->colours = config('chartjs.colours');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'map-template');
+        $this->colours = config('mapleaflet.colours');
     }
 
 
@@ -30,7 +26,7 @@ class ChartjsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('chartjs', function() {
+        $this->app->bind('mapleaflet', function() {
             return new Builder();
         });
     }
