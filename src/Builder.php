@@ -24,7 +24,7 @@ class Builder
     private $defaults = [
         'datasets' => [],
         'labels'   => [],
-        'type'     => 'line',
+        'type'     => 'openstreet',
         'options'  => [],
         'size'     => ['width' => null, 'height' => null]
     ];
@@ -33,15 +33,7 @@ class Builder
      * @var array
      */
     private $types = [
-        'bar',
-        'horizontalBar',
-        'bubble',
-        'scatter',
-        'doughnut',
-        'line',
-        'pie',
-        'polarArea',
-        'radar'
+        'openstreet' => ['type' => 'http://{s}.tile.osm.org/{z}/{x}/{y}.png', 'attribution' => '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'],
     ];
     
     /**
@@ -62,7 +54,7 @@ class Builder
     public function name($name)
     {
         $this->name          = $name;
-        $this->charts[$name] = $this->defaults;
+        $this->maps[$name] = $this->defaults;
         return $this;
     }
 
@@ -154,7 +146,7 @@ class Builder
      */
     public function render()
     {
-        $map = $this->charts[$this->name];
+        $map = $this->maps[$this->name];
 
         return view('map-template::map-template')
                 ->with('datasets', $map['datasets'])
@@ -168,7 +160,7 @@ class Builder
     
     public function container()
     {
-        $map = $this->charts[$this->name];
+        $map = $this->maps[$this->name];
 
         return view('map-template::map-template-without-script')
                 ->with('element', $this->name)
@@ -178,7 +170,7 @@ class Builder
     
     public function script()
     {
-        $map = $this->charts[$this->name];
+        $map = $this->maps[$this->name];
 
         return view('map-template::map-template-script')
             ->with('datasets', $map['datasets'])
