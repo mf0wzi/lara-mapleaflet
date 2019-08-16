@@ -11,7 +11,7 @@ class Builder
     /**
      * @var array
      */
-    private $charts = [];
+    private $maps = [];
 
     /**
      * @var string
@@ -43,6 +43,16 @@ class Builder
         'polarArea',
         'radar'
     ];
+    
+    /**
+     * @param $mapid
+     *
+     * @return $this|Builder
+     */
+    public function mapid($mapid)
+    {
+        return $this->set('mapid', $mapid);
+    }
 
     /**
      * @param $name
@@ -94,7 +104,7 @@ class Builder
     public function type($type)
     {
         if (!in_array($type, $this->types)) {
-            throw new \InvalidArgumentException('Invalid Chart type.');
+            throw new \InvalidArgumentException('Invalid Map type.');
         }
         return $this->set('type', $type);
     }
@@ -144,40 +154,40 @@ class Builder
      */
     public function render()
     {
-        $chart = $this->charts[$this->name];
+        $map = $this->charts[$this->name];
 
-        return view('chart-template::chart-template')
-                ->with('datasets', $chart['datasets'])
+        return view('map-template::map-template')
+                ->with('datasets', $map['datasets'])
                 ->with('element', $this->name)
-                ->with('labels', $chart['labels'])
-                ->with('options', isset($chart['options']) ? $chart['options'] : '')
-                ->with('optionsRaw', isset($chart['optionsRaw']) ? $chart['optionsRaw'] : '')
-                ->with('type', $chart['type'])
-                ->with('size', $chart['size']);
+                ->with('labels', $map['labels'])
+                ->with('options', isset($map['options']) ? $map['options'] : '')
+                ->with('optionsRaw', isset($map['optionsRaw']) ? $map['optionsRaw'] : '')
+                ->with('type', $map['type'])
+                ->with('size', $map['size']);
     }
     
     public function container()
     {
-        $chart = $this->charts[$this->name];
+        $map = $this->charts[$this->name];
 
-        return view('chart-template::chart-template-without-script')
+        return view('map-template::map-template-without-script')
                 ->with('element', $this->name)
-                ->with('size', $chart['size']);
+                ->with('size', $map['size']);
     }
     
     
     public function script()
     {
-        $chart = $this->charts[$this->name];
+        $map = $this->charts[$this->name];
 
-        return view('chart-template::chart-template-script')
-            ->with('datasets', $chart['datasets'])
+        return view('map-template::map-template-script')
+            ->with('datasets', $map['datasets'])
             ->with('element', $this->name)
-            ->with('labels', $chart['labels'])
-            ->with('options', isset($chart['options']) ? $chart['options'] : '')
-            ->with('optionsRaw', isset($chart['optionsRaw']) ? $chart['optionsRaw'] : '')
-            ->with('type', $chart['type'])
-            ->with('size', $chart['size']);
+            ->with('labels', $map['labels'])
+            ->with('options', isset($map['options']) ? $map['options'] : '')
+            ->with('optionsRaw', isset($map['optionsRaw']) ? $map['optionsRaw'] : '')
+            ->with('type', $map['type'])
+            ->with('size', $map['size']);
     }
 
     /**
@@ -187,7 +197,7 @@ class Builder
      */
     private function get($key)
     {
-        return array_get($this->charts[$this->name], $key);
+        return array_get($this->maps[$this->name], $key);
     }
 
     /**
@@ -198,7 +208,7 @@ class Builder
      */
     private function set($key, $value)
     {
-        array_set($this->charts[$this->name], $key, $value);
+        array_set($this->maps[$this->name], $key, $value);
         return $this;
     }
 }
