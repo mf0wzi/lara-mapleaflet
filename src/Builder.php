@@ -4,7 +4,7 @@
  * This file is inspired by Builder from Laravel ChartJS - Brian Faust
  */
 
-namespace Noonenew\LaravelChartJs;
+namespace Noonenew\LaravelLeafLet;
 
 class Builder
 {
