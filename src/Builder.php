@@ -22,21 +22,29 @@ class Builder
      * @var array
      */
     private $defaults = [
-        'datasets' => [],
-        'labels'   => [],
-        'type'     => 'openstreet',
-        'options'  => [],
-        'size'     => ['width' => null, 'height' => null]
+        'datajson'       => [],
+        'datasets'       => [],
+        'location'       => ['long' => 47.190976, 'lat' => 15.387664],
+        'marker'         => [],
+        'tooltip'        => [],
+        'popup'          => [],
+        'zoom'           => ['max' => 18, 'min' => null, 'start' => 6.2],
+        'labels'         => [],
+        'type'           => [],
+        'tile'           => 'openstreet',
+        'options'        => [],
+        'customfunction' => [],
+        'size'           => ['width' => null, 'height' => null]
     ];
 
     /**
      * @var array
      */
-    private $types = [
+    private $tiles = [
         'openstreet' => ['mapname' => 'openstreet','maplink' => 'http://{s}.tile.osm.org/{z}/{x}/{y}.png','attribution' => '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'],
         'opentopo' => ['mapname' => 'opentopo','maplink' => 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png','attribution' => 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'],
         'openmapsurfer' => ['mapname' => 'openmapsurfer','maplink' => 'https://maps.heigit.org/openmapsurfer/tiles/roads/webmercator/{z}/{x}/{y}.png','attribution' => 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> | Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'],
-        'mapbox' => ['mapname' => 'mapbox','maplink' => 'http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}','attribution' => 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> | Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors']
+        'custom' => ['mapname' => 'custom','maplink' => 'http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}','attribution' => 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> | Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors']
     ];
 
     /**
@@ -82,7 +90,23 @@ class Builder
     }
 
     /**
-     * @param array $datasets
+     * @param string|array $datajson
+     *
+     * @return Builder
+     */
+    public function datajson($datajson)
+    {
+        if (is_array($datajson)) {
+            $this->set('datajson', json_encode($datajson, true));
+            return $this;
+        }
+
+        $this->set('datajson', $datajson);
+        return $this;
+    }
+
+    /**
+     * @param string $datasets
      *
      * @return Builder
      */
@@ -92,27 +116,57 @@ class Builder
     }
 
     /**
-     * @param $type
+     * @param string $type
      *
      * @return Builder
      */
     public function type($type)
     {
+        return $this->set('type', $type);
+    }
+
+    /**
+     * @param array $zoom
+     *
+     * @return Builder
+     */
+    public function zoom(array $zoom)
+    {
+        return $this->set('zoom', $zoom);
+    }
+
+    /**
+     * @param array $location
+     *
+     * @return Builder
+     */
+    public function location(array $location)
+    {
+        return $this->set('location', $location);
+    }
+
+    /**
+     * @param $tile
+     *
+     * @return Builder
+     */
+    public function tile($tile)
+    {
         $mapname = array();
-        foreach($this->types as $maptype){
-            $mapname[] = $maptype['mapname'];
-            if($type == $maptype['mapname']){
+        foreach($this->tiles as $maptile){
+            $mapname[] = $maptile['mapname'];
+            if($tile == $maptile['mapname']){
                 $mapsdetails = [
-                    'maplink' => $maptype['maplink'],
-                    'attribution' => $maptype['attribution']
+                    'maplink' => $maptile['maplink'],
+                    'attribution' => $maptile['attribution']
                 ];
             }
         }
 
-        if (!in_array($type, $mapname)) {
-            throw new \InvalidArgumentException('Invalid Map type.');
+        if (!in_array($tile, $mapname)) {
+            throw new \InvalidArgumentException('Invalid Map Tile.');
         }
-        return $this->set('type', $mapsdetails);
+        return $this->set('tile', $mapsdetails);
     }
 
     /**
@@ -156,6 +210,72 @@ class Builder
     }
 
     /**
+     * @param string $marker
+     *
+     * @return Builder
+     */
+    public function marker($marker)
+    {
+        if(is_null($marker)){
+            $marker = "L.ExtraMarkers.icon({
+                        icon: 'fa-circle',
+                        markerColor: 'cyan',
+                        shape: 'circle',
+                        prefix: 'fa'
+                    });";
+        } else {
+            $marker = $marker;
+        }
+
+        return $this->set('marker', $marker);
+    }
+
+    /**
+     * @param string $tooltip
+     *
+     * @return Builder
+     */
+    public function tooltip($tooltip)
+    {
+        if(is_null($tooltip)){
+            $tooltip = "'<p>Please add a <code>ToolTip</code> from the admin side,</p><p> To be able to view if from here!!!</p>'";
+        } else {
+            $tooltip = $tooltip;
+        }
+        return $this->set('tooltip', $tooltip);
+    }
+
+    /**
+     * @param string $popup
+     *
+     * @return Builder
+     */
+    public function popup($popup)
+    {
+        if(is_null($popup)){
+            $popup = "'<p>Please add a <code>Popup</code> from the admin side,</p><p> To be able to view if from here!!!</p>'";
+        } else {
+            $popup = $popup;
+        }
+        return $this->set('popup', $popup);
+    }
+
+    /**
+     * @param string $customfunction
+     *
+     * @return Builder
+     */
+    public function customfunction($customfunction)
+    {
+        if(is_null($customfunction)){
+            $customfunction = null;
+        } else {
+            $customfunction = $customfunction;
+        }
+        return $this->set('customfunction', $customfunction);
+    }
+
+    /**
      * @return mixed
      */
     public function create()
@@ -168,8 +288,13 @@ class Builder
                 ->with('labels', $map['labels'])
                 ->with('options', isset($map['options']) ? $map['options'] : '')
                 ->with('optionsRaw', isset($map['optionsRaw']) ? $map['optionsRaw'] : '')
+                ->with('marker', $map['marker'])
+                ->with('tooltip', $map['tooltip'])
+                ->with('popup', $map['popup'])
                 ->with('type', $map['type'])
-                ->with('size', $map['size']);
+                ->with('tile', $map['tile'])
+                ->with('size', $map['size'])
+                ->with('zoom', $map['zoom']);
     }
 
     public function container()
@@ -192,16 +317,22 @@ class Builder
             ->with('labels', $map['labels'])
             ->with('options', isset($map['options']) ? $map['options'] : '')
             ->with('optionsRaw', isset($map['optionsRaw']) ? $map['optionsRaw'] : '')
+            ->with('marker', $map['marker'])
+            ->with('tooltip', $map['tooltip'])
+            ->with('popup', $map['popup'])
             ->with('type', $map['type'])
-            ->with('size', $map['size']);
+            ->with('tile', $map['tile'])
+            ->with('location', $map['location'])
+            ->with('datajson', $map['datajson'])
+            ->with('size', $map['size'])
+            ->with('zoom', $map['zoom']);
     }
 
     public function mapFunctions()
     {
         $map = $this->maps[$this->name];
-        dd($map['datasets']);
         return view('map-template::map-template-functions')
-        ->with('datasets', $map['datasets']);
+        ->with('customfunction', $map['customfunction']);
     }
 
     /**
